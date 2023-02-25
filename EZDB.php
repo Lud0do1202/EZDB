@@ -2,75 +2,40 @@
 
 class EZDB
 {
-    private array $enum = [];
-    private $nameEnum;
+    private PDO $pdo;
 
-    /* Constructor */
-    public function __construct(string $nameEnum = "EXAMPLE_EZDB")
+    public function __construct(string $host, string $dbname, string $username, string $password)
     {
-        $this->nameEnum = $nameEnum;
+        /* Connection to the db */
+        $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->pdo = $pdo;
     }
 
-    /* Add a new table with his columns */
-    public function addTable(string $table, ?array $columns = []): void
+    /* Select --> return associative array */
+    public function executeSelect(string $query, ?array $params = []): array
     {
-        if (isset($this->enum[$table])) return;
+        $stmt = $this->pdo->prepare($query);
 
-        $this->enum[$table] = [];
-        foreach ($columns as $column)
-            $this->enum[$table][] = $column;
+        foreach ($params as $key => $value)
+            $stmt->bindValue($key, $value);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /* Transform camel case to underscore case */
-    private function camelCaseToUpperUnderscoreCase(string $camelCase): string
+    /* Edit (insert, update, delete) --> return num row affected */
+    public function executeEdit(string $query, ?array $params = []): int
     {
-        return strtoupper(preg_replace('/(?<!^)([A-Z])/', '_$1', $camelCase));
-    }
+        $stmt = $this->pdo->prepare($query);
+        echo "<br>$query";
 
-    /* To String */
-    private function toString(bool $phpFormat = true): string
-    {
-        // Beginning
-        $s = "";
-        if ($phpFormat)
-            $s .= "<?php\n";
-        $s .= "\nclass {$this->nameEnum}\n{\n";
+        foreach ($params as $key => $value)
+            $stmt->bindValue(":$key", $value);
 
-        // Consts
-        foreach ($this->enum as $table => $columns) {
+        $stmt->execute();
 
-            // Table name
-            $s .= "\tconst " . $this->camelCaseToUpperUnderscoreCase($table) . " = '$table';\n";
-
-            // Columns of this table
-            foreach ($columns as $column)
-                $s .= "\tconst " . $this->camelCaseToUpperUnderscoreCase($table) . "_" . $this->camelCaseToUpperUnderscoreCase($column) . " = '$column';\n";
-
-            // Seperation
-            $s .= "\t/*********************************/\n";
-        }
-
-        $s .= "}\n";
-        return $s;
-    }
-
-    /* Display */
-    public function display(): void
-    {
-        echo "<pre>" . $this->toString(false) . "</pre>";
-    }
-
-    /* Create the enum file */
-    public function createFile(): void
-    {
-        // Open a new file for writing
-        $filename = $this->nameEnum . ".php";
-        $handle = fopen($filename, 'w');
-
-        // Write some content to the file
-        fwrite($handle, $this->toString());
-
-        // Close the file handle
-        fclose($handle);
+        return $stmt->rowCount();
     }
 }
