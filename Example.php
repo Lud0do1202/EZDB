@@ -29,19 +29,16 @@ $ezdb->insertInto(MY_DB::USERS, [
 
 /* ********************************** */
 /* Update */
-$ezdb->update(MY_DB::USERS, [new ColumnValue(MY_DB::USERS_PASSWORD, "444")], [new Where(new ColumnValue(MY_DB::USERS_ID, "3"), "=")]);
-
-/* ********************************** */
-/* Delete */
-$ezdb->delete(MY_DB::USERS, [
-    new Where(new ColumnValue(MY_DB::USERS_ID, 10), "<"),
-    new Where(new ColumnValue(MY_DB::USERS_USERNAME, "BBB"), "=")
-]);
+$ezdb->update(MY_DB::USERS, [new ColumnValue(MY_DB::USERS_PASSWORD, "222")], [new Where(new ColumnValue(MY_DB::USERS_ID, "3"), "=")]);
 
 /* ********************************** */
 /* Select */
 echo "<pre>";
 print_r($ezdb->select(MY_DB::USERS));
+echo "</pre>";
+
+echo "<pre>";
+print_r($ezdb->select(MY_DB::USERS, "*", [], [new OrderBy(MY_DB::USERS_PASSWORD, false), new OrderBy(MY_DB::USERS_USERNAME, false)]));
 echo "</pre>";
 
 echo "<pre>";
@@ -53,6 +50,13 @@ print_r($ezdb->select(MY_DB::USERS, [MY_DB::USERS_USERNAME, MY_DB::USERS_PASSWOR
     new Where(new ColumnValue(MY_DB::USERS_ID, 2), "<=")
 ]));
 echo "</pre>";
+
+/* ********************************** */
+/* Delete */
+$ezdb->delete(MY_DB::USERS, [
+    new Where(new ColumnValue(MY_DB::USERS_ID, 10), "<"),
+    new Where(new ColumnValue(MY_DB::USERS_USERNAME, "BBB"), "=")
+]);
 ?>
 
 <!DOCTYPE html>

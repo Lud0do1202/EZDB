@@ -1,5 +1,6 @@
 <?php
 require_once "ColumnValue.php";
+require_once "OrderBy.php";
 require_once "Where.php";
 
 class EZDB
@@ -15,7 +16,7 @@ class EZDB
     }
 
     /* Select --> return associative array */
-    public function executeSelect(string $query, ?array $params = []): array
+    public function executeSelect(string $query, array $params = []): array
     {
         $stmt = $this->pdo->prepare($query);
 
@@ -28,7 +29,7 @@ class EZDB
     }
 
     /* Edit (insert, update, delete) --> return num row affected */
-    public function executeEdit(string $query, ?array $colVals = []): int
+    public function executeEdit(string $query, array $colVals = []): int
     {
         $stmt = $this->pdo->prepare($query);
 
@@ -41,7 +42,7 @@ class EZDB
     }
 
     /* Select */
-    public function select(string $table, array|string $columns = "*", ?array $wheres = []): array
+    public function select(string $table, array|string $columns = "*", array $wheres = [], array $orderBys = []): array
     {
         // Columns --> c1, c2, c3
         $c = is_array($columns) ? join(', ', $columns) : $columns;
@@ -51,10 +52,17 @@ class EZDB
             return $where->toQueryNotBind();
         }, $wheres));
 
+        // Order by
+        $o = join(', ', array_map(function ($orderBy) {
+            return $orderBy->toQuery();
+        }, $orderBys));
+
         // Query
         $select = "SELECT $c FROM $table";
         if (!empty($wheres))
             $select .= " WHERE $w";
+        if(!empty($orderBys))
+            $select .= " ORDER BY $o";
 
         // Get Params
         $colVals = [];
@@ -65,7 +73,7 @@ class EZDB
     }
 
     /* Insert Into */
-    public function insertInto(string $table, ?array $colVals = []): int
+    public function insertInto(string $table, array $colVals = []): int
     {
         // Columns --> c1, c2, c3
         $c = join(', ', array_map(function ($colVal) {
@@ -85,7 +93,7 @@ class EZDB
     }
 
     /* Update */
-    public function update(string $table, array $colVals, ?array $wheres = []): int
+    public function update(string $table, array $colVals, array $wheres = []): int
     {
         // Set   --> c1 = :c1, c2 = :c2
         $s = join(', ', array_map(function ($colVal) {
@@ -111,7 +119,7 @@ class EZDB
     }
 
     /* Delete */
-    public function delete(string $table, ?array $wheres = []): int
+    public function delete(string $table, array $wheres = []): int
     {
         // Where --> c1 < :c1 AND c2 = :c2
         $w = join(' AND ', array_map(function ($where) {
