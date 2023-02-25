@@ -2,7 +2,7 @@
 
 class OrderBy
 {
-    private $column, $direction;
+    private string $column, $direction;
 
     public function __construct(string $column, bool $asc = true)
     {

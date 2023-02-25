@@ -64,7 +64,7 @@ class EZTable
 
             // Columns of this table
             foreach ($columns as $column)
-                $s .= "\tconst " . $this->camelCaseToUpperUnderscoreCase($table) . "_" . $this->camelCaseToUpperUnderscoreCase($column) . " = '$column';\n";
+                $s .= "\tconst " . $this->camelCaseToUpperUnderscoreCase($table) . "_" . $this->camelCaseToUpperUnderscoreCase($column) . " = '$table.$column';\n";
 
             // Seperation
             $s .= "\t/*********************************/\n";

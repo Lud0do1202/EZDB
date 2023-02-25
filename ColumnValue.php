@@ -12,7 +12,7 @@ class ColumnValue
 
     public function getParam()
     {
-        return ":" . $this->column;
+        return ":" . str_replace(".", "_", $this->column);
     }
 
     public function getColumn()

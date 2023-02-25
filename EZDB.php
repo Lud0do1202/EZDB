@@ -2,6 +2,8 @@
 require_once "ColumnValue.php";
 require_once "OrderBy.php";
 require_once "Where.php";
+require_once "W.php";
+require_once "SelectQuery.php";
 
 class EZDB
 {
@@ -19,6 +21,7 @@ class EZDB
     public function executeSelect(string $query, array $params = []): array
     {
         $stmt = $this->pdo->prepare($query);
+        echo "*** $query";
 
         foreach ($params as $param)
             $stmt->bindValue($param->getParam(), $param->getValue());
@@ -42,6 +45,21 @@ class EZDB
     }
 
     /* Select */
+    public function selectV2(SelectQuery $select): array
+    {
+        $stmt = $this->pdo->prepare($select);
+
+        foreach ($select->getParams() as $i => $param)
+            $stmt->bindValue($i + 1, $param);
+        echo "///////////<br>";
+        echo $select . "<br>Params :";
+        print_r($select->getParams());
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function select(string $table, array|string $columns = "*", array $wheres = [], array $orderBys = []): array
     {
         // Columns --> c1, c2, c3
@@ -61,8 +79,9 @@ class EZDB
         $select = "SELECT $c FROM $table";
         if (!empty($wheres))
             $select .= " WHERE $w";
-        if(!empty($orderBys))
+        if (!empty($orderBys))
             $select .= " ORDER BY $o";
+        echo $select;
 
         // Get Params
         $colVals = [];
