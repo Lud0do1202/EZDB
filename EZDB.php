@@ -15,7 +15,7 @@ class EZDB
     }
 
     /* Select --> return associative array */
-    public function executeSelect(string $query, array $params): array
+    public function executeSelect(string $query, ?array $params = []): array
     {
         $stmt = $this->pdo->prepare($query);
 
@@ -28,7 +28,7 @@ class EZDB
     }
 
     /* Edit (insert, update, delete) --> return num row affected */
-    public function executeEdit(string $query, array $params): int
+    public function executeEdit(string $query, ?array $params = []): int
     {
         $stmt = $this->pdo->prepare($query);
 
@@ -41,7 +41,7 @@ class EZDB
     }
 
     /* Insert Into */
-    public function insertInto(string $table, array $params): int
+    public function insertInto(string $table, ?array $params = []): int
     {
         // Columns --> c1, c2, c3
         $c = join(', ', array_map(function ($param) {
@@ -61,7 +61,7 @@ class EZDB
     }
 
     /* Delete */
-    public function delete(string $table, array $wheres): int
+    public function delete(string $table, ?array $wheres = []): int
     {
         // Where --> c1 < :c1 AND c2 = :c2
         $w = join(' AND ', array_map(function ($where) {
@@ -69,9 +69,12 @@ class EZDB
         }, $wheres));
 
         // Query
-        $delete = "DELETE FROM $table WHERE $w";
+        $delete = "DELETE FROM $table";
+        if(!empty($wheres))
+            $delete .= " WHERE $w";
 
         // Get Params
+        $params = [];
         foreach ($wheres as $where)
             $params[] = $where->getParam();
 

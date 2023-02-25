@@ -5,6 +5,8 @@ require_once "EZDB.php";
 
 $ezdb = new EZDB("localhost", "Lud0do1202_ezdb", "root", "");
 
+echo $ezdb->insertInto("test");
+
 /* Users */
 /* Insert into */
 $params = [
@@ -40,6 +42,8 @@ $wheres = [
     new Where(new Param(MY_DB::USERS_USERNAME, "BBB"), "=")
 ];
 echo $ezdb->delete(MY_DB::USERS, $wheres);
+
+echo $ezdb->delete(MY_DB::USERS);
 ?>
 
 <!DOCTYPE html>
