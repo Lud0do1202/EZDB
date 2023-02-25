@@ -40,6 +40,30 @@ class EZDB
         return $stmt->rowCount();
     }
 
+    /* Select */
+    public function select(string $table, array|string $columns = "*", ?array $wheres = []): array
+    {
+        // Columns --> c1, c2, c3
+        $c = is_array($columns) ? join(', ', $columns) : $columns;
+
+        // Where --> c1 < :c1 AND c2 = :c2
+        $w = join(' AND ', array_map(function ($where) {
+            return $where->toQueryNotBind();
+        }, $wheres));
+
+        // Query
+        $select = "SELECT $c FROM $table";
+        if (!empty($wheres))
+            $select .= " WHERE $w";
+
+        // Get Params
+        $params = [];
+        foreach ($wheres as $where)
+            $params[] = $where->getParam();
+
+        return $this->executeSelect($select, $params);
+    }
+
     /* Insert Into */
     public function insertInto(string $table, ?array $params = []): int
     {
@@ -70,7 +94,7 @@ class EZDB
 
         // Query
         $delete = "DELETE FROM $table";
-        if(!empty($wheres))
+        if (!empty($wheres))
             $delete .= " WHERE $w";
 
         // Get Params

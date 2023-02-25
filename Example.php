@@ -5,45 +5,61 @@ require_once "EZDB.php";
 
 $ezdb = new EZDB("localhost", "Lud0do1202_ezdb", "root", "");
 
-echo $ezdb->insertInto("test");
+$ezdb->insertInto("test");
+$ezdb->delete(MY_DB::USERS);
 
+/* ********************************** */
 /* Users */
-/* Insert into */
-$params = [
+// User 1
+$ezdb->insertInto(MY_DB::USERS, [
     new Param(MY_DB::USERS_ID, 1),
     new Param(MY_DB::USERS_USERNAME, "AAA"),
     new Param(MY_DB::USERS_PASSWORD, "111")
-];
-echo $ezdb->insertInto(MY_DB::USERS, $params);
+]);
 
-$params = [
+// User 2
+$ezdb->insertInto(MY_DB::USERS, [
     new Param(MY_DB::USERS_ID, 2),
     new Param(MY_DB::USERS_USERNAME, "BBB"),
     new Param(MY_DB::USERS_PASSWORD, "222")
-];
-echo $ezdb->insertInto(MY_DB::USERS, $params);
+]);
 
-$params = [
+// User 3
+$ezdb->insertInto(MY_DB::USERS, [
     new Param(MY_DB::USERS_ID, 3),
     new Param(MY_DB::USERS_USERNAME, "CCC"),
     new Param(MY_DB::USERS_PASSWORD, "333")
-];
-echo $ezdb->insertInto(MY_DB::USERS, $params);
+]);
 
+/* ********************************** */
+/* Select */
+echo "<pre>";
+print_r($ezdb->select(MY_DB::USERS));
+echo "</pre>";
+
+echo "<pre>";
+print_r($ezdb->select(MY_DB::USERS, [MY_DB::USERS_USERNAME, MY_DB::USERS_PASSWORD]));
+echo "</pre>";
+
+echo "<pre>";
+print_r($ezdb->select(MY_DB::USERS, [MY_DB::USERS_USERNAME, MY_DB::USERS_PASSWORD], [
+    new Where(new Param(MY_DB::USERS_ID, 2), "<=")
+]));
+echo "</pre>";
+
+/* ********************************** */
 /* Delete */
-$wheres = [
+// Fake User 3
+$ezdb->delete(MY_DB::USERS, [
     new Where(new Param(MY_DB::USERS_ID, 10), ">"),
     new Where(new Param(MY_DB::USERS_USERNAME, "CCC"), "=")
-];
-echo $ezdb->delete(MY_DB::USERS, $wheres);
+]);
 
-$wheres = [
+// User 2
+$ezdb->delete(MY_DB::USERS, [
     new Where(new Param(MY_DB::USERS_ID, 10), "<"),
     new Where(new Param(MY_DB::USERS_USERNAME, "BBB"), "=")
-];
-echo $ezdb->delete(MY_DB::USERS, $wheres);
-
-echo $ezdb->delete(MY_DB::USERS);
+]);
 ?>
 
 <!DOCTYPE html>
