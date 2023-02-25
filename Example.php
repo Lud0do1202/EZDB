@@ -1,28 +1,45 @@
 <?php
 
-require "MY_DB.php";
-require "EZDB.php";
+require_once "MY_DB.php";
+require_once "EZDB.php";
 
 $ezdb = new EZDB("localhost", "Lud0do1202_ezdb", "root", "");
 
-echo $ezdb->executeEdit('DELETE FROM ' . MY_DB::USERS);
-
-$insertUser =
-    'INSERT INTO ' . MY_DB::USERS . ' (' . MY_DB::USERS_USERNAME . ', ' . MY_DB::USERS_PASSWORD . ') 
-    VALUES (:' . MY_DB::USERS_USERNAME . ', :' . MY_DB::USERS_PASSWORD . ')';
-
-$john = [
-    MY_DB::USERS_USERNAME => "john",
-    MY_DB::USERS_PASSWORD => "123"
+/* Users */
+/* Insert into */
+$params = [
+    new Param(MY_DB::USERS_ID, 1),
+    new Param(MY_DB::USERS_USERNAME, "AAA"),
+    new Param(MY_DB::USERS_PASSWORD, "111")
 ];
-$jane = [
-    MY_DB::USERS_USERNAME => "jane",
-    MY_DB::USERS_PASSWORD => "456"
+echo $ezdb->insertInto(MY_DB::USERS, $params);
+
+$params = [
+    new Param(MY_DB::USERS_ID, 2),
+    new Param(MY_DB::USERS_USERNAME, "BBB"),
+    new Param(MY_DB::USERS_PASSWORD, "222")
 ];
+echo $ezdb->insertInto(MY_DB::USERS, $params);
 
-$ezdb->executeEdit($insertUser, $john);
-$ezdb->executeEdit($insertUser, $jane);
+$params = [
+    new Param(MY_DB::USERS_ID, 3),
+    new Param(MY_DB::USERS_USERNAME, "CCC"),
+    new Param(MY_DB::USERS_PASSWORD, "333")
+];
+echo $ezdb->insertInto(MY_DB::USERS, $params);
 
+/* Delete */
+$wheres = [
+    new Where(new Param(MY_DB::USERS_ID, 10), ">"),
+    new Where(new Param(MY_DB::USERS_USERNAME, "CCC"), "=")
+];
+echo $ezdb->delete(MY_DB::USERS, $wheres);
+
+$wheres = [
+    new Where(new Param(MY_DB::USERS_ID, 10), "<"),
+    new Where(new Param(MY_DB::USERS_USERNAME, "BBB"), "=")
+];
+echo $ezdb->delete(MY_DB::USERS, $wheres);
 ?>
 
 <!DOCTYPE html>
