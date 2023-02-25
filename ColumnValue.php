@@ -1,6 +1,6 @@
 <?php
 
-class Param
+class ColumnValue
 {
     private $column, $value;
 

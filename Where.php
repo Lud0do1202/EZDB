@@ -2,22 +2,22 @@
 
 class Where
 {
-    private Param $param;
+    private ColumnValue $colVal;
     private string $operator;
 
-    public function __construct(Param $param, string $operator)
+    public function __construct(ColumnValue $colVal, string $operator)
     {
-        $this->param = $param;
+        $this->colVal = $colVal;
         $this->operator = $operator;
     }
 
     public function toQueryNotBind(): string
     {
-        return $this->param->getColumn() . " " . $this->operator . " " . $this->param->getParam();
+        return $this->colVal->getColumn() . " " . $this->operator . " " . $this->colVal->getParam();
     }
 
-    public function getParam()
+    public function getColumnValue()
     {
-        return $this->param;
+        return $this->colVal;
     }
 }

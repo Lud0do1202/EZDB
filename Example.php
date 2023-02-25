@@ -5,30 +5,37 @@ require_once "EZDB.php";
 
 $ezdb = new EZDB("localhost", "Lud0do1202_ezdb", "root", "");
 
-$ezdb->insertInto("test");
 $ezdb->delete(MY_DB::USERS);
 
 /* ********************************** */
 /* Users */
-// User 1
 $ezdb->insertInto(MY_DB::USERS, [
-    new Param(MY_DB::USERS_ID, 1),
-    new Param(MY_DB::USERS_USERNAME, "AAA"),
-    new Param(MY_DB::USERS_PASSWORD, "111")
+    new ColumnValue(MY_DB::USERS_ID, 1),
+    new ColumnValue(MY_DB::USERS_USERNAME, "AAA"),
+    new ColumnValue(MY_DB::USERS_PASSWORD, "111")
 ]);
 
-// User 2
 $ezdb->insertInto(MY_DB::USERS, [
-    new Param(MY_DB::USERS_ID, 2),
-    new Param(MY_DB::USERS_USERNAME, "BBB"),
-    new Param(MY_DB::USERS_PASSWORD, "222")
+    new ColumnValue(MY_DB::USERS_ID, 2),
+    new ColumnValue(MY_DB::USERS_USERNAME, "BBB"),
+    new ColumnValue(MY_DB::USERS_PASSWORD, "222")
 ]);
 
-// User 3
 $ezdb->insertInto(MY_DB::USERS, [
-    new Param(MY_DB::USERS_ID, 3),
-    new Param(MY_DB::USERS_USERNAME, "CCC"),
-    new Param(MY_DB::USERS_PASSWORD, "333")
+    new ColumnValue(MY_DB::USERS_ID, 3),
+    new ColumnValue(MY_DB::USERS_USERNAME, "CCC"),
+    new ColumnValue(MY_DB::USERS_PASSWORD, "333")
+]);
+
+/* ********************************** */
+/* Update */
+$ezdb->update(MY_DB::USERS, [new ColumnValue(MY_DB::USERS_PASSWORD, "444")], [new Where(new ColumnValue(MY_DB::USERS_ID, "3"), "=")]);
+
+/* ********************************** */
+/* Delete */
+$ezdb->delete(MY_DB::USERS, [
+    new Where(new ColumnValue(MY_DB::USERS_ID, 10), "<"),
+    new Where(new ColumnValue(MY_DB::USERS_USERNAME, "BBB"), "=")
 ]);
 
 /* ********************************** */
@@ -43,23 +50,9 @@ echo "</pre>";
 
 echo "<pre>";
 print_r($ezdb->select(MY_DB::USERS, [MY_DB::USERS_USERNAME, MY_DB::USERS_PASSWORD], [
-    new Where(new Param(MY_DB::USERS_ID, 2), "<=")
+    new Where(new ColumnValue(MY_DB::USERS_ID, 2), "<=")
 ]));
 echo "</pre>";
-
-/* ********************************** */
-/* Delete */
-// Fake User 3
-$ezdb->delete(MY_DB::USERS, [
-    new Where(new Param(MY_DB::USERS_ID, 10), ">"),
-    new Where(new Param(MY_DB::USERS_USERNAME, "CCC"), "=")
-]);
-
-// User 2
-$ezdb->delete(MY_DB::USERS, [
-    new Where(new Param(MY_DB::USERS_ID, 10), "<"),
-    new Where(new Param(MY_DB::USERS_USERNAME, "BBB"), "=")
-]);
 ?>
 
 <!DOCTYPE html>

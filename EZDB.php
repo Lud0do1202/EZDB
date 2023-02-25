@@ -1,5 +1,5 @@
 <?php
-require_once "Param.php";
+require_once "ColumnValue.php";
 require_once "Where.php";
 
 class EZDB
@@ -28,12 +28,12 @@ class EZDB
     }
 
     /* Edit (insert, update, delete) --> return num row affected */
-    public function executeEdit(string $query, ?array $params = []): int
+    public function executeEdit(string $query, ?array $colVals = []): int
     {
         $stmt = $this->pdo->prepare($query);
 
-        foreach ($params as $param)
-            $stmt->bindValue($param->getParam(), $param->getValue());
+        foreach ($colVals as $colVal)
+            $stmt->bindValue($colVal->getParam(), $colVal->getValue());
 
         $stmt->execute();
 
@@ -57,31 +57,57 @@ class EZDB
             $select .= " WHERE $w";
 
         // Get Params
-        $params = [];
+        $colVals = [];
         foreach ($wheres as $where)
-            $params[] = $where->getParam();
+            $colVals[] = $where->getColumnValue();
 
-        return $this->executeSelect($select, $params);
+        return $this->executeSelect($select, $colVals);
     }
 
     /* Insert Into */
-    public function insertInto(string $table, ?array $params = []): int
+    public function insertInto(string $table, ?array $colVals = []): int
     {
         // Columns --> c1, c2, c3
-        $c = join(', ', array_map(function ($param) {
-            return $param->getColumn();
-        }, $params));
+        $c = join(', ', array_map(function ($colVal) {
+            return $colVal->getColumn();
+        }, $colVals));
 
         // Params  --> :c1, :c2, :c3
-        $p = join(', ', array_map(function ($param) {
-            return $param->getParam();
-        }, $params));
+        $p = join(', ', array_map(function ($colVal) {
+            return $colVal->getParam();
+        }, $colVals));
 
         // Query
         $insertInto = "INSERT INTO $table ($c) VALUES ($p)";
 
         // Execute
-        return $this->executeEdit($insertInto, $params);
+        return $this->executeEdit($insertInto, $colVals);
+    }
+
+    /* Update */
+    public function update(string $table, array $colVals, ?array $wheres = []): int
+    {
+        // Set   --> c1 = :c1, c2 = :c2
+        $s = join(', ', array_map(function ($colVal) {
+            return $colVal->getColumn() . " = " . $colVal->getParam();
+        }, $colVals));
+
+        // Where --> c1 < :c1 AND c2 = :c2
+        $w = join(' AND ', array_map(function ($where) {
+            return $where->toQueryNotBind();
+        }, $wheres));
+
+        // Query
+        $delete = "UPDATE $table SET $s";
+        if (!empty($wheres))
+            $delete .= " WHERE $w";
+
+        // Get Params
+        foreach ($wheres as $where)
+            $colVals[] = $where->getColumnValue();
+
+        // Execute
+        return $this->executeEdit($delete, $colVals);
     }
 
     /* Delete */
@@ -98,11 +124,11 @@ class EZDB
             $delete .= " WHERE $w";
 
         // Get Params
-        $params = [];
+        $colVals = [];
         foreach ($wheres as $where)
-            $params[] = $where->getParam();
+            $colVals[] = $where->getColumnValue();
 
         // Execute
-        return $this->executeEdit($delete, $params);
+        return $this->executeEdit($delete, $colVals);
     }
 }
