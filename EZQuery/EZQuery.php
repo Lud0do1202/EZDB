@@ -9,7 +9,7 @@ require_once "../Query/InsertQuery.php";
 require_once "../Query/DeleteQuery.php";
 require_once "../Query/UpdateQuery.php";
 
-class EZDB
+class EZQuery
 {
     private PDO $pdo;
 

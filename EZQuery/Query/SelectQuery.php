@@ -34,7 +34,7 @@ class SelectQuery implements ISelectQuery
     }
 
     /* Where */
-    public function where(W|array $wheres): SelectQuery
+    public function where(Where|array $wheres): SelectQuery
     {
         if (is_array($wheres)) {
             $this->wheres = join(' AND ', array_map(function ($where) {

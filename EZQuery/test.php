@@ -12,9 +12,9 @@
 
     <?php
     require_once "../EZTable/Mydb.php";
-    require_once "EZDB.php";
+    require_once "EZQuery.php";
 
-    $ezdb = new EZDB("localhost", "Lud0do1202_ezdb", "root", "");
+    $ezdb = new EZQuery("localhost", "Lud0do1202_ezdb", "root", "");
 
     /* Delete All User and Posts */
     $deleteAllPosts = new DeleteQuery(Mydb::POSTS);
@@ -82,7 +82,7 @@
     $select3 = (new SelectQuery([Mydb::USERS, Mydb::POSTS]))
         ->distinct()
         ->columns(Mydb::USERS_USERNAME)
-        ->where(new W(Mydb::USERS_ID, "=", Mydb::POSTS_USER_ID, false))
+        ->where(new Where(Mydb::USERS_ID, "=", Mydb::POSTS_USER_ID, false))
         ->orderBy(new OrderBy(Mydb::USERS_USERNAME, false));
     echo "<pre>";
     print_r($ezdb->executeSelectV2($select3));
@@ -90,7 +90,7 @@
 
     /* Delete One Post */
     $deletePost1 = (new DeleteQuery(Mydb::POSTS))
-        ->where(new W(Mydb::POSTS_ID, "=", 1));
+        ->where(new Where(Mydb::POSTS_ID, "=", 1));
     echo $ezdb->executeEditV2($deletePost1);
 
     echo "<pre>";
@@ -101,7 +101,7 @@
     $UpdateUser1 = (new UpdateQuery(Mydb::USERS, [
         new DBTuple(Mydb::USERS_USERNAME, "$$$"),
         new DBTuple(Mydb::USERS_PASSWORD, "???")
-    ]))->where(new W(Mydb::USERS_ID, "=", 1));
+    ]))->where(new Where(Mydb::USERS_ID, "=", 1));
     echo $ezdb->executeEditV2($UpdateUser1);
 
     echo "<pre>";

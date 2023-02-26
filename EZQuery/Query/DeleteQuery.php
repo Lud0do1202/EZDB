@@ -1,6 +1,6 @@
 <?php
 
-class UpdateQuery implements IEditQuery
+class DeleteQuery implements IEditQuery
 {
     // Empty Attributes
     private string $wheres = "";
@@ -10,25 +10,14 @@ class UpdateQuery implements IEditQuery
 
     // Must Set Attributes
     private string $table;
-    private string $set;
 
-    public function __construct(string $table, DBTuple|array $dbTuples)
+    public function __construct(string $table)
     {
         $this->table = $table;
-
-        if (is_array($dbTuples)) {
-            $this->set = join(', ', array_map(function ($tuple) {
-                $this->params[] = $tuple->getValue();
-                return $tuple->getColumn() . " = ?";
-            }, $dbTuples));
-        } else {
-            $this->params[] = $dbTuples->getValue();
-            $this->set = $dbTuples->getColumn() . " = ?";
-        }
     }
 
     /* Where */
-    public function where(W|array $wheres): UpdateQuery
+    public function where(Where|array $wheres): DeleteQuery
     {
         if (is_array($wheres)) {
             $this->wheres = join(' AND ', array_map(function ($where) {
@@ -52,7 +41,7 @@ class UpdateQuery implements IEditQuery
     }
 
     /* Get Params */
-    public function getParams(): array
+    public function getParams() : array
     {
         return $this->params;
     }
@@ -60,8 +49,8 @@ class UpdateQuery implements IEditQuery
     /* To String */
     public function __toString()
     {
-        // UPDATE $table SET $set
-        $query = "UPDATE {$this->table} SET {$this->set} ";
+        // DELETE FROM $table
+        $query = "DELETE FROM {$this->table} ";
 
         // Wheres
         if (!empty($this->wheres))

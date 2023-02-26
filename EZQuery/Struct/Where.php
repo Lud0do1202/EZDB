@@ -1,6 +1,6 @@
 <?php
 
-class W
+class Where
 {
     private string $column, $operator;
     private bool $toBind;
