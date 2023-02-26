@@ -88,13 +88,24 @@
     print_r($ezdb->executeSelectV2($select3));
     echo "</pre>";
 
-    /* Delete One User */
-    $deleteUser1 = (new DeleteQuery(Mydb::POSTS))
+    /* Delete One Post */
+    $deletePost1 = (new DeleteQuery(Mydb::POSTS))
         ->where(new W(Mydb::POSTS_ID, "=", 1));
-    echo $ezdb->executeEditV2($deleteUser1);
+    echo $ezdb->executeEditV2($deletePost1);
 
     echo "<pre>";
     print_r($ezdb->executeSelectV2($select2));
+    echo "</pre>";
+
+    /* Update One User */
+    $UpdateUser1 = (new UpdateQuery(Mydb::USERS, [
+        new DBTuple(Mydb::USERS_USERNAME, "$$$"),
+        new DBTuple(Mydb::USERS_PASSWORD, "???")
+    ]))->where(new W(Mydb::USERS_ID, "=", 1));
+    echo $ezdb->executeEditV2($UpdateUser1);
+
+    echo "<pre>";
+    print_r($ezdb->executeSelectV2($select1));
     echo "</pre>";
     ?>
 

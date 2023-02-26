@@ -8,6 +8,7 @@ require_once "../Query/Query.php";
 require_once "../Query/SelectQuery.php";
 require_once "../Query/InsertQuery.php";
 require_once "../Query/DeleteQuery.php";
+require_once "../Query/UpdateQuery.php";
 
 class EZDB
 {
