@@ -7,6 +7,7 @@ require_once "../Struct/DBTuple.php";
 require_once "../Query/SelectQuery.php";
 require_once "../Query/EditQuery.php";
 require_once "../Query/InsertQuery.php";
+require_once "../Query/DeleteQuery.php";
 
 class EZDB
 {

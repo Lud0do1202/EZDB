@@ -16,6 +16,13 @@
 
     $ezdb = new EZDB("localhost", "Lud0do1202_ezdb", "root", "");
 
+    /* Delete All User and Posts */
+    $deleteAllPosts = new DeleteQuery(Mydb::POSTS);
+    echo $ezdb->executeEditV2($deleteAllPosts);
+
+    $deleteAllUsers = new DeleteQuery(Mydb::USERS);
+    echo $ezdb->executeEditV2($deleteAllUsers);
+
     /* Insert Users */
     $insertUser1 = (new InsertQuery(Mydb::USERS))
         ->columns([
@@ -79,6 +86,15 @@
         ->orderBy(new OrderBy(Mydb::USERS_USERNAME, false));
     echo "<pre>";
     print_r($ezdb->executeSelectV2($select3));
+    echo "</pre>";
+
+    /* Delete One User */
+    $deleteUser1 = (new DeleteQuery(Mydb::POSTS))
+        ->where(new W(Mydb::POSTS_ID, "=", 1));
+    echo $ezdb->executeEditV2($deleteUser1);
+
+    echo "<pre>";
+    print_r($ezdb->executeSelectV2($select2));
     echo "</pre>";
     ?>
 
