@@ -4,8 +4,8 @@ require_once "../Struct/OrderBy.php";
 require_once "../Where.php";
 require_once "../Struct/W.php";
 require_once "../Struct/DBTuple.php";
+require_once "../Query/Query.php";
 require_once "../Query/SelectQuery.php";
-require_once "../Query/EditQuery.php";
 require_once "../Query/InsertQuery.php";
 require_once "../Query/DeleteQuery.php";
 
@@ -24,9 +24,13 @@ class EZDB
     // /////////////////////////////////////////////////////////
     // /////////////////////////////////////////////////////////
     /* Select */
-    public function executeSelectV2(SelectQuery $query): array
+    public function executeSelectV2(ISelectQuery $query): array
     {
-        echo "<br>$query";
+        // Debug
+        echo "<br><strong>$query</strong><br><i>Params : ";
+        print_r($query->getParams());
+        echo "</i><br>";
+        
         $stmt = $this->pdo->prepare($query);
 
         foreach ($query->getParams() as $i => $param)
@@ -38,9 +42,13 @@ class EZDB
     }
 
     /* Edit */
-    public function executeEditV2(EditQuery $query): int
+    public function executeEditV2(IEditQuery $query): int
     {
-        echo "<br>$query";
+        // Debug
+        echo "<br><strong>$query</strong><br><i>Params : ";
+        print_r($query->getParams());
+        echo "</i><br>";
+
         $stmt = $this->pdo->prepare($query);
 
         foreach ($query->getParams() as $i => $param)
@@ -80,7 +88,7 @@ class EZDB
         return $stmt->rowCount();
     }
 
-    
+
 
     public function select(string $table, array|string $columns = "*", array $wheres = [], array $orderBys = []): array
     {

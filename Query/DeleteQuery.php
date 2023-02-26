@@ -1,16 +1,19 @@
 <?php
 
-class DeleteQuery implements EditQuery
+class DeleteQuery implements IEditQuery
 {
+    // Empty Attributes
+    private string $wheres = "";
+
+    // Default Attributes
+    private array $params = [];
+
+    // Must Set Attributes
     private string $table;
-    private string|null $wheres;
-    private array $params;
 
     public function __construct(string $table)
     {
         $this->table = $table;
-        $this->wheres = null;
-        $this->params = [];
     }
 
     /* Where */
@@ -37,6 +40,12 @@ class DeleteQuery implements EditQuery
         return $this;
     }
 
+    /* Get Params */
+    public function getParams() : array
+    {
+        return $this->params;
+    }
+
     /* To String */
     public function __toString()
     {
@@ -44,15 +53,9 @@ class DeleteQuery implements EditQuery
         $query = "DELETE FROM {$this->table} ";
 
         // Wheres
-        if ($this->wheres != null)
+        if (!empty($this->wheres))
             $query .= "WHERE {$this->wheres} ";
 
         return $query;
-    }
-
-    /* Params */
-    public function getParams(): array
-    {
-        return $this->params;
     }
 }

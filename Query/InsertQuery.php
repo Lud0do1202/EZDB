@@ -1,17 +1,20 @@
 <?php
 
-class InsertQuery implements EditQuery
+class InsertQuery implements IEditQuery
 {
+    // Empty Attributes
+    private string $columns = "";
+    private string $values = "";
+
+    // Default Attributes
+    private array $params = [];
+
+    // Must Set Attributes
     private string $table;
-    private string|null $columns, $values;
-    private array $params;
 
     public function __construct(string $table)
     {
         $this->table = $table;
-        $this->columns = null;
-        $this->values = null;
-        $this->params = [];
     }
 
     /* Columns */
@@ -31,6 +34,12 @@ class InsertQuery implements EditQuery
         }
         return $this;
     }
+    
+    /* Get Params */
+    public function getParams() : array
+    {
+        return $this->params;
+    }
 
     /* To String */
     public function __toString()
@@ -39,22 +48,16 @@ class InsertQuery implements EditQuery
         $query = "INSERT INTO {$this->table} ";
 
         // Columns
-        if ($this->columns != null)
+        if (!empty($this->columns))
             $query .= "({$this->columns}) ";
 
         // Values
         $query .= "VALUES ";
 
         // The values
-        if ($this->values != null)
+        if (!empty($this->values))
             $query .= "({$this->values})";
 
         return $query;
-    }
-
-    /* Params */
-    public function getParams(): array
-    {
-        return $this->params;
     }
 }

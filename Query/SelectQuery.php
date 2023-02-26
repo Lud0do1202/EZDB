@@ -1,19 +1,22 @@
 <?php
 
-class SelectQuery
+class SelectQuery implements ISelectQuery
 {
-    private string $columns, $tables;
-    private string|null $distinct, $wheres, $orderBys;
-    private array $params;
+    // Empty Attributes
+    private string $distinct = "";
+    private string $wheres = "";
+    private string $orderBys = "";
+
+    // Default Attributes
+    private string $columns = "*";
+    private array $params = [];
+
+    // Must Set Attributes
+    private string $tables;
 
     public function __construct(string|array $tables)
     {
-        $this->distinct = null;
-        $this->columns = "*";
         $this->tables = is_array($tables) ? join(', ', $tables) : $tables;
-        $this->wheres = null;
-        $this->orderBys = null;
-        $this->params = [];
     }
 
     /* Distinct */
@@ -67,6 +70,12 @@ class SelectQuery
         return $this;
     }
 
+    /* Get Params */
+    public function getParams() : array
+    {
+        return $this->params;
+    }
+
     /* To String */
     public function __toString()
     {
@@ -74,28 +83,22 @@ class SelectQuery
         $query = "SELECT ";
 
         // Distinct
-        $query .= $this->distinct ?? "";
+        $query .= "{$this->distinct} ";
 
         // Columns
-        $query .= " {$this->columns}";
+        $query .= "{$this->columns} ";
 
         // Tables
-        $query .= " FROM {$this->tables}";
+        $query .= "FROM {$this->tables} ";
 
         // Where
-        if ($this->wheres != null)
-            $query .= " WHERE {$this->wheres}";
+        if (!empty($this->wheres))
+            $query .= "WHERE {$this->wheres} ";
 
         // Order By
-        if ($this->orderBys != null)
-            $query .= " ORDER BY {$this->orderBys}";
+        if (!empty($this->orderBys))
+            $query .= "ORDER BY {$this->orderBys}";
 
         return $query;
-    }
-
-    /* Params */
-    public function getParams(): array
-    {
-        return $this->params;
     }
 }
