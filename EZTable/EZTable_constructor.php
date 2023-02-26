@@ -1,6 +1,6 @@
 <?php
 require "EZTable.php";
-$ezTable = new EZTable("MY_DB");
+$ezTable = new EZTable("Mydb");
 
 $users = [
     "id",

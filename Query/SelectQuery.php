@@ -2,7 +2,8 @@
 
 class SelectQuery
 {
-    private string|null $distinct, $columns, $tables, $wheres, $orderBys;
+    private string $columns, $tables;
+    private string|null $distinct, $wheres, $orderBys;
     private array $params;
 
     public function __construct(string|array $tables)

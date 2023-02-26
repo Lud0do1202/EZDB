@@ -12,6 +12,6 @@ class OrderBy
 
     public function toQuery(): string
     {
-        return $this->column . " " . $this->direction;
+        return "{$this->column} {$this->direction}";
     }
 }

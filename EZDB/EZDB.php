@@ -1,9 +1,12 @@
 <?php
-require_once "ColumnValue.php";
-require_once "OrderBy.php";
-require_once "Where.php";
-require_once "W.php";
-require_once "SelectQuery.php";
+require_once "../ColumnValue.php";
+require_once "../Struct/OrderBy.php";
+require_once "../Where.php";
+require_once "../Struct/W.php";
+require_once "../Struct/DBTuple.php";
+require_once "../Query/SelectQuery.php";
+require_once "../Query/EditQuery.php";
+require_once "../Query/InsertQuery.php";
 
 class EZDB
 {
@@ -16,6 +19,38 @@ class EZDB
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->pdo = $pdo;
     }
+
+    // /////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////
+    /* Select */
+    public function executeSelectV2(SelectQuery $query): array
+    {
+        echo "<br>$query";
+        $stmt = $this->pdo->prepare($query);
+
+        foreach ($query->getParams() as $i => $param)
+            $stmt->bindValue($i + 1, $param);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /* Edit */
+    public function executeEditV2(EditQuery $query): int
+    {
+        echo "<br>$query";
+        $stmt = $this->pdo->prepare($query);
+
+        foreach ($query->getParams() as $i => $param)
+            $stmt->bindValue($i + 1, $param);
+
+        $stmt->execute();
+
+        return $stmt->rowCount();
+    }
+    // /////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////
 
     /* Select --> return associative array */
     public function executeSelect(string $query, array $params = []): array
@@ -44,21 +79,7 @@ class EZDB
         return $stmt->rowCount();
     }
 
-    /* Select */
-    public function selectV2(SelectQuery $select): array
-    {
-        $stmt = $this->pdo->prepare($select);
-
-        foreach ($select->getParams() as $i => $param)
-            $stmt->bindValue($i + 1, $param);
-        echo "///////////<br>";
-        echo $select . "<br>Params :";
-        print_r($select->getParams());
-
-        $stmt->execute();
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+    
 
     public function select(string $table, array|string $columns = "*", array $wheres = [], array $orderBys = []): array
     {
