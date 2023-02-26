@@ -1,2 +1,4 @@
 # EZDB
- Library making it easier to use, maintain and modify tables in a db
+ Library making it easier to :
+ - Use tables from a DB 
+ - Execute queries
