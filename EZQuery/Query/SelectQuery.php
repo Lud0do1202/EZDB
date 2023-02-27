@@ -4,8 +4,9 @@ class SelectQuery implements ISelectQuery
 {
     // Empty Attributes
     private string $distinct = "";
-    private string $wheres = "";
-    private string $orderBys = "";
+    private string $limit = "";
+    private string $where = "";
+    private string $orderBy = "";
 
     // Default Attributes
     private string $columns = "*";
@@ -19,6 +20,7 @@ class SelectQuery implements ISelectQuery
         $this->tables = is_array($tables) ? join(', ', $tables) : $tables;
     }
 
+    /* ********************************************************* */
     /* Distinct */
     public function distinct(): SelectQuery
     {
@@ -26,6 +28,15 @@ class SelectQuery implements ISelectQuery
         return $this;
     }
 
+    /* ********************************************************* */
+    /* Limit */
+    public function limit(int $n): SelectQuery
+    {
+        $this->limit = "LIMIT ($n)";
+        return $this;
+    }
+
+    /* ********************************************************* */
     /* Select Column */
     public function columns(string|array $columns): SelectQuery
     {
@@ -33,72 +44,59 @@ class SelectQuery implements ISelectQuery
         return $this;
     }
 
+    /* ********************************************************* */
     /* Where */
-    public function where(Where|array $wheres): SelectQuery
+    public function where(string $where, ...$params): SelectQuery
     {
-        if (is_array($wheres)) {
-            $this->wheres = join(' AND ', array_map(function ($where) {
-                if ($where->toBind()) {
-                    $this->params[] = $where->getValue();
-                    return $where->toQueryToBind();
-                } else {
-                    return $where->toQuery();
-                }
-            }, $wheres));
-        } else {
-            if ($wheres->toBind()) {
-                $this->params[] = $wheres->getValue();
-                $this->wheres = $wheres->toQueryToBind();
-            } else {
-                $this->wheres = $wheres->toQuery();
+        // EXAMPLE
+        // Where (idUser = idPost AND tot = 0) OR tot > 1000
+        $example = "(% = % AND % = ?) OR % > ?";
+
+        // Split into a table the string $where
+        $split = str_split($where);
+
+        // replace % by the value
+        // Stock the value of ? into $this->params
+        $count = count($split);
+        for ($i = $j = 0; $i < $count; $i++) {
+            switch ($split[$i]) {
+                case '%':
+                    $split[$i] = $params[$j++];
+                    break;
+                case '?':
+                    $this->params[] = $params[$j++];
+                    break;
             }
         }
 
+        // Join the table
+        $this->where = "WHERE " . join("", $split);
+
         return $this;
     }
 
+    /* ********************************************************* */
     /* Order By */
-    public function orderBy(OrderBy|array $orderBys): SelectQuery
+    public function orderBy(...$orderBys): SelectQuery
     {
-        if (is_array($orderBys)) {
-            $this->orderBys = join(' AND ', array_map(function ($orderBy) {
-                return $orderBy->toQuery();
-            }, $orderBys));
-        } else {
-            $this->orderBys = $orderBys->toQuery();
-        }
+        $this->orderBy = "ORDER BY " . join(', ', array_map(function($orderBy){
+            return is_array($orderBy) ? $orderBy[0] . ($orderBy[1] ? " ASC" : " DESC") : "$orderBy ASC";
+        }, $orderBys));
+
         return $this;
     }
 
+    /* ********************************************************* */
     /* Get Params */
-    public function getParams() : array
+    public function getParams(): array
     {
         return $this->params;
     }
 
+    /* ********************************************************* */
     /* To String */
     public function __toString()
     {
-        // Select
-        $query = "SELECT ";
-
-        // Distinct
-        $query .= "{$this->distinct} ";
-
-        // Columns
-        $query .= "{$this->columns} ";
-
-        // Tables
-        $query .= "FROM {$this->tables} ";
-
-        // Where
-        if (!empty($this->wheres))
-            $query .= "WHERE {$this->wheres} ";
-
-        // Order By
-        if (!empty($this->orderBys))
-            $query .= "ORDER BY {$this->orderBys}";
-
-        return $query;
+        return "SELECT {$this->distinct} {$this->limit} {$this->columns} FROM {$this->tables} {$this->where} {$this->orderBy}";
     }
 }

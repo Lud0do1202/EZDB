@@ -1,6 +1,15 @@
 <?php
+require_once "./Struct/OrderBy.php";
+require_once "./Struct/Where.php";
+require_once "./Struct/DBTuple.php";
 
-class EZDB
+require_once "./Query/IQuery.php";
+require_once "./Query/SelectQuery.php";
+require_once "./Query/InsertQuery.php";
+require_once "./Query/DeleteQuery.php";
+require_once "./Query/UpdateQuery.php";
+
+class EZQuery
 {
     private PDO $pdo;
 
