@@ -2,13 +2,11 @@
 
 class SelectQuery implements ISelectQuery
 {
-    // Empty Attributes
+    // Attributes
     private string $distinct = "";
     private string $limit = "";
     private string $where = "";
     private string $orderBy = "";
-
-    // Default Attributes
     private string $columns = "*";
     private array $params = [];
 

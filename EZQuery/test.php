@@ -16,6 +16,7 @@
     require "./Query/SelectQuery.php";
     require "./Query/InsertQuery.php";
     require "./Query/DeleteQuery.php";
+    require "./Query/UpdateQuery.php";
 
     // SELECT
     echo (new SelectQuery(Mydb::USERS));
@@ -49,6 +50,7 @@
     echo "<br>";
     print_r($insert3->getParams());
     
+    // DELETE
     echo "<br>************************<br>";
     echo $delete1 = (new DeleteQuery(Mydb::USERS));
     echo "<br>";
@@ -58,6 +60,22 @@
     echo $delete2 = (new DeleteQuery(Mydb::USERS))->where("% BETWEEN ? AND ?", Mydb::USERS_ID, 1, 10);
     echo "<br>";
     print_r($delete2->getParams());
+
+    // UPDATE
+    echo "<br>************************<br>";
+    echo $update1 = (new UpdateQuery(Mydb::USERS, [Mydb::USERS_ID, "5"], [Mydb::USERS_USERNAME, "Ludo"]));
+    echo "<br>";
+    print_r($update1->getParams());
+    
+    echo "<br>";
+    echo $update2 = (new UpdateQuery(Mydb::USERS, [Mydb::USERS_ID, "5"], [Mydb::USERS_USERNAME, "Ludo"]))->where("% = ?", Mydb::USERS_ID, 1);
+    echo "<br>";
+    print_r($update2->getParams());
+    
+    echo "<br>";
+    echo $update3 = (new UpdateQuery(Mydb::USERS, [Mydb::USERS_ID, "5"], [Mydb::USERS_USERNAME, "DEFAULT"]))->where("% = ?", Mydb::USERS_ID, 1);
+    echo "<br>";
+    print_r($update3->getParams());
     ?>
 
 </body>

@@ -2,7 +2,7 @@
 
 class InsertQuery implements IEditQuery
 {
-    // Default Attributes
+    // Attributes
     private string $columns = "";
     private string $values = "()";
     private array $params = [];

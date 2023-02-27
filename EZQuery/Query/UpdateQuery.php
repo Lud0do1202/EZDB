@@ -1,23 +1,29 @@
 <?php
 
 
-class DeleteQuery implements IEditQuery
+class UpdateQuery implements IEditQuery
 {
     // Attributes
     private string $where = "";
     private array $params = [];
 
     // Must Set Attributes
-    private string $tables;
+    private string $table;
+    private string $set;
 
-    public function __construct(string $table)
+    public function __construct(string $table, array ...$set)
     {
         $this->table = $table;
+
+        $this->set = join(', ', array_map(function ($s) {
+            $this->params[] = $s[1];
+            return $s[0] . " = ?";
+        }, $set));
     }
 
     /* ********************************************************* */
     /* Where */
-    public function where(string $where, ...$params): DeleteQuery
+    public function where(string $where, ...$params): UpdateQuery
     {
         // EXAMPLE
         // Where (idUser = idPost AND tot = 0) OR tot > 1000
@@ -46,17 +52,18 @@ class DeleteQuery implements IEditQuery
         return $this;
     }
 
-    /* ********************************************************* */
     /* Get Params */
     public function getParams(): array
     {
         return $this->params;
     }
 
-    /* ********************************************************* */
     /* To String */
     public function __toString()
     {
-        return "DELETE FROM {$this->table} {$this->where}";
+        // UPDATE $table SET $set
+        $query = "UPDATE {$this->table} SET {$this->set} {$this->where}";
+
+        return $query;
     }
 }
