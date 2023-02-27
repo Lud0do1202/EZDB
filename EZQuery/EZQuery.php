@@ -1,13 +1,13 @@
 <?php
-require_once "Struct/OrderBy.php";
-require_once "Struct/Where.php";
-require_once "Struct/DBTuple.php";
+require_once "./Struct/OrderBy.php";
+require_once "./Struct/Where.php";
+require_once "./Struct/DBTuple.php";
 
-require_once "Query/IQuery.php";
-require_once "Query/SelectQuery.php";
-require_once "Query/InsertQuery.php";
-require_once "Query/DeleteQuery.php";
-require_once "Query/UpdateQuery.php";
+require_once "./Query/IQuery.php";
+require_once "./Query/SelectQuery.php";
+require_once "./Query/InsertQuery.php";
+require_once "./Query/DeleteQuery.php";
+require_once "./Query/UpdateQuery.php";
 
 class EZQuery
 {
@@ -22,7 +22,7 @@ class EZQuery
     }
 
     /* Select */
-    public function executeSelectV2(ISelectQuery $query): array
+    public function executeSelect(ISelectQuery $query): array
     {
         // $this->displayQuery($query);
 
@@ -37,7 +37,7 @@ class EZQuery
     }
 
     /* Edit */
-    public function executeEditV2(IEditQuery $query): int
+    public function executeEdit(IEditQuery $query): int
     {
         // $this->displayQuery($query);
 
