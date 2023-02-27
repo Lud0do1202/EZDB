@@ -14,17 +14,39 @@
     require_once "../EZTable/Mydb.php";
     require "Query/IQuery.php";
     require "Query/SelectQuery.php";
+    require "Query/InsertQuery.php";
+
+    // SELECT
     echo (new SelectQuery(Mydb::USERS));
+
     echo "<br>";
     echo (new SelectQuery(Mydb::USERS))->limit(2);
+
     echo "<br>";
     echo $select1 = (new SelectQuery(Mydb::USERS))->where("% <= ?", Mydb::USERS_ID, 2);
     echo "<br>";
     print_r($select1->getParams());
+
     echo "<br>";
     echo $select2 = (new SelectQuery(Mydb::USERS))->where("% <= ?", Mydb::USERS_ID, 2)->orderBy([mydb::USERS_USERNAME, false], Mydb::USERS_PASSWORD);
     echo "<br>";
     print_r($select2->getParams());
+
+    // INSERT
+    echo "<br>************************<br>";
+    echo $insert1 = (new InsertQuery(Mydb::USERS));
+    echo "<br>";
+    print_r($insert1->getParams());
+    
+    echo "<br>";
+    echo $insert2 = (new InsertQuery(Mydb::USERS))->values(0, "111", "222");
+    echo "<br>";
+    print_r($insert2->getParams());
+    
+    echo "<br>";
+    echo $insert3 = (new InsertQuery(Mydb::USERS))->values(1, "aaa", "bbb")->columns(Mydb::USERS_ID, Mydb::USERS_USERNAME, Mydb::USERS_PASSWORD);
+    echo "<br>";
+    print_r($insert3->getParams());
     ?>
 
 </body>
