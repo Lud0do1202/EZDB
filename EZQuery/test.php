@@ -30,12 +30,12 @@
 
     // Update user
     echo "<br>************************<br>";
-    echo $ezq->executeEdit((new UpdateQuery(Mydb::USERS, [Mydb::USERS_USERNAME, "zzz"]))->where("% = ?", Mydb::USERS_ID, 1));
+    echo $ezq->executeEdit((new UpdateQuery(Mydb::USERS, [Mydb::USERS_USERNAME, "zzz"]))->where("% = ?", Mydb::USERS_ID, 1), true);
 
     // SELECT
     echo "<br>************************<br>";
     echo "<pre>";
-    print_r($ezq->executeSelect(new SelectQuery(Mydb::USERS)));
+    print_r($ezq->executeSelect(new SelectQuery(Mydb::USERS), true));
     echo "</pre>";
     ?>
 
