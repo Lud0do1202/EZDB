@@ -11,71 +11,32 @@
 <body>
 
     <?php
+    // Require
     require_once "../EZTable/Mydb.php";
-    require "./Query/IQuery.php";
-    require "./Query/SelectQuery.php";
-    require "./Query/InsertQuery.php";
-    require "./Query/DeleteQuery.php";
-    require "./Query/UpdateQuery.php";
+    require_once "./EZQuery.php";
+
+    // DB Connection
+    $ezq = new EZQuery("localhost", "Lud0do1202_ezdb", "root", "");
+
+    // Delete All users
+    echo "<br>************************<br>";
+    echo $ezq->executeEdit(new DeleteQuery(Mydb::USERS), true);
+
+    // Insert Users
+    echo "<br>************************<br>";
+    echo $ezq->executeEdit((new InsertQuery(Mydb::USERS))->columns(Mydb::USERS_ID, Mydb::USERS_USERNAME, Mydb::USERS_PASSWORD)->values(1, "aaa", "111"), true);
+    echo $ezq->executeEdit((new InsertQuery(Mydb::USERS))->columns(Mydb::USERS_ID, Mydb::USERS_USERNAME, Mydb::USERS_PASSWORD)->values(2, "bbb", "222"), true);
+    echo $ezq->executeEdit((new InsertQuery(Mydb::USERS))->columns(Mydb::USERS_ID, Mydb::USERS_USERNAME, Mydb::USERS_PASSWORD)->values(3, "ccc", "333"), true);
+
+    // Update user
+    echo "<br>************************<br>";
+    echo $ezq->executeEdit((new UpdateQuery(Mydb::USERS, [Mydb::USERS_USERNAME, "zzz"]))->where("% = ?", Mydb::USERS_ID, 1));
 
     // SELECT
-    echo (new SelectQuery(Mydb::USERS));
-
-    echo "<br>";
-    echo (new SelectQuery(Mydb::USERS))->limit(2);
-
-    echo "<br>";
-    echo $select1 = (new SelectQuery(Mydb::USERS))->where("% <= ?", Mydb::USERS_ID, 2);
-    echo "<br>";
-    print_r($select1->getParams());
-
-    echo "<br>";
-    echo $select2 = (new SelectQuery(Mydb::USERS))->where("% <= ?", Mydb::USERS_ID, 2)->orderBy([mydb::USERS_USERNAME, false], Mydb::USERS_PASSWORD);
-    echo "<br>";
-    print_r($select2->getParams());
-
-    // INSERT
     echo "<br>************************<br>";
-    echo $insert1 = (new InsertQuery(Mydb::USERS));
-    echo "<br>";
-    print_r($insert1->getParams());
-    
-    echo "<br>";
-    echo $insert2 = (new InsertQuery(Mydb::USERS))->values(0, "111", "222");
-    echo "<br>";
-    print_r($insert2->getParams());
-    
-    echo "<br>";
-    echo $insert3 = (new InsertQuery(Mydb::USERS))->values(1, "aaa", "bbb")->columns(Mydb::USERS_ID, Mydb::USERS_USERNAME, Mydb::USERS_PASSWORD);
-    echo "<br>";
-    print_r($insert3->getParams());
-    
-    // DELETE
-    echo "<br>************************<br>";
-    echo $delete1 = (new DeleteQuery(Mydb::USERS));
-    echo "<br>";
-    print_r($delete1->getParams());
-    
-    echo "<br>";
-    echo $delete2 = (new DeleteQuery(Mydb::USERS))->where("% BETWEEN ? AND ?", Mydb::USERS_ID, 1, 10);
-    echo "<br>";
-    print_r($delete2->getParams());
-
-    // UPDATE
-    echo "<br>************************<br>";
-    echo $update1 = (new UpdateQuery(Mydb::USERS, [Mydb::USERS_ID, "5"], [Mydb::USERS_USERNAME, "Ludo"]));
-    echo "<br>";
-    print_r($update1->getParams());
-    
-    echo "<br>";
-    echo $update2 = (new UpdateQuery(Mydb::USERS, [Mydb::USERS_ID, "5"], [Mydb::USERS_USERNAME, "Ludo"]))->where("% = ?", Mydb::USERS_ID, 1);
-    echo "<br>";
-    print_r($update2->getParams());
-    
-    echo "<br>";
-    echo $update3 = (new UpdateQuery(Mydb::USERS, [Mydb::USERS_ID, "5"], [Mydb::USERS_USERNAME, "DEFAULT"]))->where("% = ?", Mydb::USERS_ID, 1);
-    echo "<br>";
-    print_r($update3->getParams());
+    echo "<pre>";
+    print_r($ezq->executeSelect(new SelectQuery(Mydb::USERS)));
+    echo "</pre>";
     ?>
 
 </body>
