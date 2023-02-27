@@ -1,13 +1,13 @@
 <?php
-require_once "../Struct/OrderBy.php";
-require_once "../Struct/W.php";
-require_once "../Struct/DBTuple.php";
+require_once "Struct/OrderBy.php";
+require_once "Struct/Where.php";
+require_once "Struct/DBTuple.php";
 
-require_once "../Query/Query.php";
-require_once "../Query/SelectQuery.php";
-require_once "../Query/InsertQuery.php";
-require_once "../Query/DeleteQuery.php";
-require_once "../Query/UpdateQuery.php";
+require_once "Query/IQuery.php";
+require_once "Query/SelectQuery.php";
+require_once "Query/InsertQuery.php";
+require_once "Query/DeleteQuery.php";
+require_once "Query/UpdateQuery.php";
 
 class EZQuery
 {
@@ -24,6 +24,8 @@ class EZQuery
     /* Select */
     public function executeSelectV2(ISelectQuery $query): array
     {
+        // $this->displayQuery($query);
+
         $stmt = $this->pdo->prepare($query);
 
         foreach ($query->getParams() as $i => $param)
@@ -37,6 +39,8 @@ class EZQuery
     /* Edit */
     public function executeEditV2(IEditQuery $query): int
     {
+        // $this->displayQuery($query);
+
         $stmt = $this->pdo->prepare($query);
 
         foreach ($query->getParams() as $i => $param)
@@ -45,5 +49,12 @@ class EZQuery
         $stmt->execute();
 
         return $stmt->rowCount();
+    }
+
+    /* Display query */
+    private function displayQuery(IQuery $query) : void {
+        echo "<br><strong>$query<br><pre><i>";
+        print_r($query->getParams());
+        echo "</i></pre></strong>";
     }
 }
