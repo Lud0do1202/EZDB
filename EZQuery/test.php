@@ -12,9 +12,10 @@
 
     <?php
     require_once "../EZTable/Mydb.php";
-    require "Query/IQuery.php";
-    require "Query/SelectQuery.php";
-    require "Query/InsertQuery.php";
+    require "./Query/IQuery.php";
+    require "./Query/SelectQuery.php";
+    require "./Query/InsertQuery.php";
+    require "./Query/DeleteQuery.php";
 
     // SELECT
     echo (new SelectQuery(Mydb::USERS));
@@ -47,6 +48,16 @@
     echo $insert3 = (new InsertQuery(Mydb::USERS))->values(1, "aaa", "bbb")->columns(Mydb::USERS_ID, Mydb::USERS_USERNAME, Mydb::USERS_PASSWORD);
     echo "<br>";
     print_r($insert3->getParams());
+    
+    echo "<br>************************<br>";
+    echo $delete1 = (new DeleteQuery(Mydb::USERS));
+    echo "<br>";
+    print_r($delete1->getParams());
+    
+    echo "<br>";
+    echo $delete2 = (new DeleteQuery(Mydb::USERS))->where("% BETWEEN ? AND ?", Mydb::USERS_ID, 1, 10);
+    echo "<br>";
+    print_r($delete2->getParams());
     ?>
 
 </body>

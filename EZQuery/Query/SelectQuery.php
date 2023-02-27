@@ -15,9 +15,9 @@ class SelectQuery implements ISelectQuery
     // Must Set Attributes
     private string $tables;
 
-    public function __construct(string|array $tables)
+    public function __construct(string ...$tables)
     {
-        $this->tables = is_array($tables) ? join(', ', $tables) : $tables;
+        $this->tables = join(', ', $tables);
     }
 
     /* ********************************************************* */
@@ -38,9 +38,9 @@ class SelectQuery implements ISelectQuery
 
     /* ********************************************************* */
     /* Select Column */
-    public function columns(string|array $columns): SelectQuery
+    public function columns(string ...$columns): SelectQuery
     {
-        $this->columns = is_array($columns) ? join(', ', $columns) : $columns;
+        $this->columns = join(', ', $columns);
         return $this;
     }
 
