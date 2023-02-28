@@ -37,6 +37,10 @@
     echo "<pre>";
     print_r($ezq->executeSelect(new SelectQuery(Mydb::USERS), true));
     echo "</pre>";
+    
+    echo "<pre>";
+    print_r($ezq->sexecuteSelect("SELECT count(1) FROM " . Mydb::USERS, [], true));
+    echo "</pre>";
     ?>
 
 </body>

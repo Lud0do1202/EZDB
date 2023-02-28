@@ -22,14 +22,21 @@ class EZQuery
     /* Select */
     public function executeSelect(ISelectQuery $query, ?bool $debug = false): array
     {
+        return $this->sexecuteSelect($query, $query->getParams(), $debug);
+    }
+
+    /* Select */
+    public function sexecuteSelect(string $query, ?array $params = [], ?bool $debug = false): array
+    {
         // Debug
-        if ($debug) $this->displayQuery($query);
+        if ($debug) $this->displayQuery($query, $params);
+
 
         // Prepare query
         $stmt = $this->pdo->prepare($query);
 
         // Bind Params
-        foreach ($query->getParams() as $i => $param)
+        foreach ($params as $i => $param)
             $stmt->bindValue($i + 1, $param);
 
         // Execute query
@@ -42,14 +49,19 @@ class EZQuery
     /* Edit */
     public function executeEdit(IEditQuery $query, ?bool $debug = false): int
     {
+        return $this->sexecuteEdit($query, $query->getParams(), $debug);
+    }
+
+    public function sexecuteEdit(string $query, ?array $params = [], ?bool $debug = false): int
+    {
         // Debug
-        if ($debug) $this->displayQuery($query);
+        if ($debug) $this->displayQuery($query, $params);
 
         // Prepare query
         $stmt = $this->pdo->prepare($query);
 
         // Bind Params
-        foreach ($query->getParams() as $i => $param)
+        foreach ($params as $i => $param)
             $stmt->bindValue($i + 1, $param);
 
         // Execute query
@@ -60,10 +72,10 @@ class EZQuery
     }
 
     /* Display query */
-    private function displayQuery(IQuery $query): void
+    private function displayQuery(string $query, array $params): void
     {
         echo "<br><strong>$query<br><pre><i>";
-        print_r($query->getParams());
+        print_r($params);
         echo "</i></pre></strong><br>";
     }
 }
