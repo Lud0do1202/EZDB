@@ -5,7 +5,7 @@ class InsertQuery implements IEditQuery
     // Attributes
     private string $columns = "";
     private string $values = "()";
-    private array $params = [];
+    private array $args = [];
 
     // Must Set Attributes
     private string $table;
@@ -28,16 +28,16 @@ class InsertQuery implements IEditQuery
     public function values(string ...$values): InsertQuery
     {
         $this->values = "(" . join(', ', str_split(str_repeat("?", count($values))))  . ")";
-        $this->params = $values;
+        $this->args = $values;
 
         return $this;
     }
 
     /* ********************************************************* */
-    /* Get Params */
-    public function getParams(): array
+    /* Get Args */
+    public function getArgs(): array
     {
-        return $this->params;
+        return $this->args;
     }
 
     /* ********************************************************* */

@@ -5,7 +5,7 @@ class UpdateQuery implements IEditQuery
 {
     // Attributes
     private string $where = "";
-    private array $params = [];
+    private array $args = [];
 
     // Must Set Attributes
     private string $table;
@@ -16,32 +16,28 @@ class UpdateQuery implements IEditQuery
         $this->table = $table;
 
         $this->set = join(', ', array_map(function ($s) {
-            $this->params[] = $s[1];
+            $this->args[] = $s[1];
             return $s[0] . " = ?";
         }, $set));
     }
 
     /* ********************************************************* */
     /* Where */
-    public function where(string $where, ...$params): UpdateQuery
+    public function where(string $where, ...$args): UpdateQuery
     {
-        // EXAMPLE
-        // Where (idUser = idPost AND tot = 0) OR tot > 1000
-        $example = "(% = % AND % = ?) OR % > ?";
-
         // Split into a table the string $where
         $split = str_split($where);
 
         // replace % by the value
-        // Stock the value of ? into $this->params
+        // Stock the value of ? into $this->args
         $count = count($split);
         for ($i = $j = 0; $i < $count; $i++) {
             switch ($split[$i]) {
                 case '%':
-                    $split[$i] = $params[$j++];
+                    $split[$i] = $args[$j++];
                     break;
                 case '?':
-                    $this->params[] = $params[$j++];
+                    $this->args[] = $args[$j++];
                     break;
             }
         }
@@ -52,10 +48,10 @@ class UpdateQuery implements IEditQuery
         return $this;
     }
 
-    /* Get Params */
-    public function getParams(): array
+    /* Get Args */
+    public function getArgs(): array
     {
-        return $this->params;
+        return $this->args;
     }
 
     /* To String */

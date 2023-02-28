@@ -2,7 +2,7 @@
 
 interface IQuery
 {
-    public function getParams();
+    public function getArgs();
     public function __toString();
 }
 

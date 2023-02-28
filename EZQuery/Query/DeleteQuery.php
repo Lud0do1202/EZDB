@@ -5,10 +5,10 @@ class DeleteQuery implements IEditQuery
 {
     // Attributes
     private string $where = "";
-    private array $params = [];
+    private array $args = [];
 
     // Must Set Attributes
-    private string $tables;
+    private string $table;
 
     public function __construct(string $table)
     {
@@ -17,25 +17,21 @@ class DeleteQuery implements IEditQuery
 
     /* ********************************************************* */
     /* Where */
-    public function where(string $where, ...$params): DeleteQuery
+    public function where(string $where, ...$args): DeleteQuery
     {
-        // EXAMPLE
-        // Where (idUser = idPost AND tot = 0) OR tot > 1000
-        $example = "(% = % AND % = ?) OR % > ?";
-
         // Split into a table the string $where
         $split = str_split($where);
 
         // replace % by the value
-        // Stock the value of ? into $this->params
+        // Stock the value of ? into $this->args
         $count = count($split);
         for ($i = $j = 0; $i < $count; $i++) {
             switch ($split[$i]) {
                 case '%':
-                    $split[$i] = $params[$j++];
+                    $split[$i] = $args[$j++];
                     break;
                 case '?':
-                    $this->params[] = $params[$j++];
+                    $this->args[] = $args[$j++];
                     break;
             }
         }
@@ -47,10 +43,10 @@ class DeleteQuery implements IEditQuery
     }
 
     /* ********************************************************* */
-    /* Get Params */
-    public function getParams(): array
+    /* Get Args */
+    public function getArgs(): array
     {
-        return $this->params;
+        return $this->args;
     }
 
     /* ********************************************************* */

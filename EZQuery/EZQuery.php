@@ -10,6 +10,7 @@ require_once "./Query/UpdateQuery.php";
 class EZQuery
 {
     private PDO $pdo;
+    private bool $debug = false;
 
     public function __construct(string $host, string $dbname, string $username, string $password)
     {
@@ -19,25 +20,60 @@ class EZQuery
         $this->pdo = $pdo;
     }
 
-    /* Select */
-    public function executeSelect(ISelectQuery $query, ?bool $debug = false): array
+    /* Debug */
+    public function debug(?bool $debug = true) : void
     {
-        return $this->sexecuteSelect($query, $query->getParams(), $debug);
+        $this->debug = $debug;
     }
 
     /* Select */
-    public function sexecuteSelect(string $query, ?array $params = [], ?bool $debug = false): array
+    public function executeSelect(ISelectQuery $query): array
     {
         // Debug
-        if ($debug) $this->displayQuery($query, $params);
-
+        if ($this->debug) $this->displayQuery($query, $query->getArgs());
 
         // Prepare query
         $stmt = $this->pdo->prepare($query);
 
-        // Bind Params
-        foreach ($params as $i => $param)
-            $stmt->bindValue($i + 1, $param);
+        // Bind Args
+        foreach ($query->getArgs() as $i => $arg)
+            $stmt->bindValue($i + 1, $arg);
+
+        // Execute query
+        $stmt->execute();
+
+        // Return results
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /* Select */
+    public function sexecuteSelect(string $query, ...$args): array
+    {
+        // Replace % ? by args
+        $bindArgs = [];
+        $split = str_split($query);
+        $count = count($split);
+        for ($i = $j = 0; $i < $count; $i++) {
+            switch ($split[$i]) {
+                case '%':
+                    $split[$i] = $args[$j++];
+                    break;
+                case '?':
+                    $bindArgs[] = $args[$j++];
+                    break;
+            }
+        }
+        $query = join("", $split);
+
+        // Debug
+        if ($this->debug) $this->displayQuery($query, $args);
+
+        // Prepare query
+        $stmt = $this->pdo->prepare($query);
+
+        // Bind Args
+        foreach ($bindArgs as $i => $arg)
+            $stmt->bindValue($i + 1, $arg);
 
         // Execute query
         $stmt->execute();
@@ -47,22 +83,17 @@ class EZQuery
     }
 
     /* Edit */
-    public function executeEdit(IEditQuery $query, ?bool $debug = false): int
-    {
-        return $this->sexecuteEdit($query, $query->getParams(), $debug);
-    }
-
-    public function sexecuteEdit(string $query, ?array $params = [], ?bool $debug = false): int
+    public function executeEdit(IEditQuery $query): int
     {
         // Debug
-        if ($debug) $this->displayQuery($query, $params);
+        if ($this->debug) $this->displayQuery($query, $query->getArgs());
 
         // Prepare query
         $stmt = $this->pdo->prepare($query);
 
-        // Bind Params
-        foreach ($params as $i => $param)
-            $stmt->bindValue($i + 1, $param);
+        // Bind Args
+        foreach ($query->getArgs() as $i => $arg)
+            $stmt->bindValue($i + 1, $arg);
 
         // Execute query
         $stmt->execute();
@@ -71,11 +102,48 @@ class EZQuery
         return $stmt->rowCount();
     }
 
+    public function sexecuteEdit(string $query, ...$args): int
+    {
+        // Replace % ? by args
+        $bindArgs = [];
+        $split = str_split($query);
+        $count = count($split);
+        for ($i = $j = 0; $i < $count; $i++) {
+            switch ($split[$i]) {
+                case '%':
+                    $split[$i] = $args[$j++];
+                    break;
+                case '?':
+                    $bindArgs[] = $args[$j++];
+                    break;
+            }
+        }
+        $query = join("", $split);
+
+        // Debug
+        if ($this->debug) $this->displayQuery($query, $bindArgs);
+
+        // Prepare query
+        $stmt = $this->pdo->prepare($query);
+
+        // Bind Args
+        foreach ($bindArgs as $i => $arg)
+            $stmt->bindValue($i + 1, $arg);
+
+        // Execute query
+        $stmt->execute();
+
+        // Return num rows affected
+        return $stmt->rowCount();
+    }
+
+    /*  */
+
     /* Display query */
-    private function displayQuery(string $query, array $params): void
+    private function displayQuery(string $query, array $args): void
     {
         echo "<br><strong>$query<br><pre><i>";
-        print_r($params);
+        print_r($args);
         echo "</i></pre></strong><br>";
     }
 }
