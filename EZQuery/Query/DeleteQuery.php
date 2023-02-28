@@ -1,7 +1,7 @@
 <?php
 
 
-class DeleteQuery extends SEditQuery
+class DeleteQuery implements IEditQuery
 {
     // Attributes
     private string $where = "";
@@ -19,10 +19,10 @@ class DeleteQuery extends SEditQuery
     /* Where */
     public function where(string $where, ...$args): DeleteQuery
     {
-        $convertArg = $this->convertArgs($where, $args);
+        $convertArgs = new ConverterArgs($where, $args);
 
-        $this->where = "WHERE " . $convertArg[0];
-        $this->args = $convertArg[1];
+        $this->where = "WHERE " . $convertArgs->getQuery();
+        $this->args = $convertArgs->getArgs();
 
         return $this;
     }

@@ -1,6 +1,6 @@
 <?php
 
-class SelectQuery extends SSelectQuery
+class SelectQuery implements ISelectQuery
 {
     // Attributes
     private string $distinct = "";
@@ -49,10 +49,11 @@ class SelectQuery extends SSelectQuery
     /* Where */
     public function where(string $where, ...$args): SelectQuery
     {
-        $convertArg = $this->convertArgs($where, $args);
 
-        $this->where = "WHERE " . $convertArg[0];
-        $this->argsWhere = $convertArg[1];
+        $convertArgs = new ConverterArgs($where, $args);
+
+        $this->where = "WHERE " . $convertArgs->getQuery();
+        $this->argsWhere = $convertArgs->getArgs();
 
         return $this;
     }
@@ -70,10 +71,11 @@ class SelectQuery extends SSelectQuery
     /* Having */
     public function having(string $having, ...$args): SelectQuery
     {
-        $convertArg = $this->convertArgs($having, $args);
 
-        $this->having = "HAVING " . $convertArg[0];
-        $this->argsHaving = $convertArg[1];
+        $convertArgs = new ConverterArgs($having, $args);
+
+        $this->having = "HAVING " . $convertArgs->getQuery();
+        $this->argsHaving = $convertArgs->getArgs();
 
         return $this;
     }

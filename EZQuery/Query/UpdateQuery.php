@@ -1,7 +1,7 @@
 <?php
 
 
-class UpdateQuery extends SEditQuery
+class UpdateQuery implements IEditQuery
 {
     // Attributes
     private string $where = "";
@@ -26,10 +26,10 @@ class UpdateQuery extends SEditQuery
     /* Where */
     public function where(string $where, ...$args): UpdateQuery
     {
-        $convertArg = $this->convertArgs($where, $args);
+        $convertArgs = new ConverterArgs($where, $args);
 
-        $this->where = "WHERE " . $convertArg[0];
-        $this->argsWhere = $convertArg[1];
+        $this->where = "WHERE " . $convertArgs->getQuery();
+        $this->argsWhere = $convertArgs->getArgs();
 
         return $this;
     }

@@ -1,7 +1,8 @@
 <?php
 
 // Query
-require_once "./Query/Query.php";
+require_once "./Query/ConverterArgs.php";
+require_once "./Query/IQuery.php";
 require_once "./Query/SelectQuery.php";
 require_once "./Query/InsertQuery.php";
 require_once "./Query/DeleteQuery.php";
@@ -27,7 +28,7 @@ class EZQuery
     }
 
     /* Select */
-    public function executeSelect(SSelectQuery $query): array
+    public function executeSelect(ISelectQuery $query): array
     {
         // Debug
         if ($this->debug) $this->displayQuery($query, $query->getArgs());
@@ -50,20 +51,9 @@ class EZQuery
     public function sexecuteSelect(string $query, ...$args): array
     {
         // Replace % ? by args
-        $bindArgs = [];
-        $split = str_split($query);
-        $count = count($split);
-        for ($i = $j = 0; $i < $count; $i++) {
-            switch ($split[$i]) {
-                case '%':
-                    $split[$i] = $args[$j++];
-                    break;
-                case '?':
-                    $bindArgs[] = $args[$j++];
-                    break;
-            }
-        }
-        $query = join("", $split);
+        $converterArgs = new ConverterArgs($query, $args);
+        $query = $converterArgs->getQuery();
+        $args = $converterArgs->getArgs();
 
         // Debug
         if ($this->debug) $this->displayQuery($query, $args);
@@ -72,7 +62,7 @@ class EZQuery
         $stmt = $this->pdo->prepare($query);
 
         // Bind Args
-        foreach ($bindArgs as $i => $arg)
+        foreach ($args as $i => $arg)
             $stmt->bindValue($i + 1, $arg);
 
         // Execute query
@@ -83,7 +73,7 @@ class EZQuery
     }
 
     /* Edit */
-    public function executeEdit(SEditQuery $query): int
+    public function executeEdit(IEditQuery $query): int
     {
         // Debug
         if ($this->debug) $this->displayQuery($query, $query->getArgs());
@@ -105,29 +95,18 @@ class EZQuery
     public function sexecuteEdit(string $query, ...$args): int
     {
         // Replace % ? by args
-        $bindArgs = [];
-        $split = str_split($query);
-        $count = count($split);
-        for ($i = $j = 0; $i < $count; $i++) {
-            switch ($split[$i]) {
-                case '%':
-                    $split[$i] = $args[$j++];
-                    break;
-                case '?':
-                    $bindArgs[] = $args[$j++];
-                    break;
-            }
-        }
-        $query = join("", $split);
+        $converterArgs = new ConverterArgs($query, $args);
+        $query = $converterArgs->getQuery();
+        $args = $converterArgs->getArgs();
 
         // Debug
-        if ($this->debug) $this->displayQuery($query, $bindArgs);
+        if ($this->debug) $this->displayQuery($query, $args);
 
         // Prepare query
         $stmt = $this->pdo->prepare($query);
 
         // Bind Args
-        foreach ($bindArgs as $i => $arg)
+        foreach ($args as $i => $arg)
             $stmt->bindValue($i + 1, $arg);
 
         // Execute query
@@ -136,8 +115,6 @@ class EZQuery
         // Return num rows affected
         return $stmt->rowCount();
     }
-
-    /*  */
 
     /* Display query */
     private function displayQuery(string $query, array $args): void
