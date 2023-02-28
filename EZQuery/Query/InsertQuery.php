@@ -1,6 +1,6 @@
 <?php
 
-class InsertQuery implements IEditQuery
+class InsertQuery extends SEditQuery
 {
     // Attributes
     private string $columns = "";

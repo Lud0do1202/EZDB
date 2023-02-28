@@ -1,7 +1,7 @@
 <?php
 
 
-class DeleteQuery implements IEditQuery
+class DeleteQuery extends SEditQuery
 {
     // Attributes
     private string $where = "";
@@ -19,25 +19,10 @@ class DeleteQuery implements IEditQuery
     /* Where */
     public function where(string $where, ...$args): DeleteQuery
     {
-        // Split into a table the string $where
-        $split = str_split($where);
+        $convertArg = $this->convertArgs($where, $args);
 
-        // replace % by the value
-        // Stock the value of ? into $this->args
-        $count = count($split);
-        for ($i = $j = 0; $i < $count; $i++) {
-            switch ($split[$i]) {
-                case '%':
-                    $split[$i] = $args[$j++];
-                    break;
-                case '?':
-                    $this->args[] = $args[$j++];
-                    break;
-            }
-        }
-
-        // Join the table
-        $this->where = "WHERE " . join("", $split);
+        $this->where = "WHERE " . $convertArg[0];
+        $this->args = $convertArg[1];
 
         return $this;
     }

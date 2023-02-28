@@ -1,11 +1,11 @@
 <?php
 
-class SelectQuery implements ISelectQuery
+class SelectQuery extends SSelectQuery
 {
     // Attributes
     private string $distinct = "";
     private string $limit = "";
-    private string $columns = "*";
+    private string $columns = "*"; // Default *
     private string $where = "";
     private string $groupBy = "";
     private string $having = "";
@@ -49,25 +49,10 @@ class SelectQuery implements ISelectQuery
     /* Where */
     public function where(string $where, ...$args): SelectQuery
     {
-        // Split into a table the string $where
-        $split = str_split($where);
+        $convertArg = $this->convertArgs($where, $args);
 
-        // replace % by the value
-        // Stock the value of ? into $this->args
-        $count = count($split);
-        for ($i = $j = 0; $i < $count; $i++) {
-            switch ($split[$i]) {
-                case '%':
-                    $split[$i] = $args[$j++];
-                    break;
-                case '?':
-                    $this->argsWhere[] = $args[$j++];
-                    break;
-            }
-        }
-
-        // Join the table
-        $this->where = "WHERE " . join("", $split);
+        $this->where = "WHERE " . $convertArg[0];
+        $this->argsWhere = $convertArg[1];
 
         return $this;
     }
@@ -85,25 +70,10 @@ class SelectQuery implements ISelectQuery
     /* Having */
     public function having(string $having, ...$args): SelectQuery
     {
-        // Split into a table the string $where
-        $split = str_split($having);
+        $convertArg = $this->convertArgs($having, $args);
 
-        // replace % by the value
-        // Stock the value of ? into $this->args
-        $count = count($split);
-        for ($i = $j = 0; $i < $count; $i++) {
-            switch ($split[$i]) {
-                case '%':
-                    $split[$i] = $args[$j++];
-                    break;
-                case '?':
-                    $this->argsHaving[] = $args[$j++];
-                    break;
-            }
-        }
-
-        // Join the table
-        $this->having = "HAVING " . join("", $split);
+        $this->having = "HAVING " . $convertArg[0];
+        $this->argsHaving = $convertArg[1];
 
         return $this;
     }
@@ -112,7 +82,7 @@ class SelectQuery implements ISelectQuery
     /* Order By */
     public function orderBy(...$orderBys): SelectQuery
     {
-        $this->orderBy = "ORDER BY " . join(', ', array_map(function($orderBy){
+        $this->orderBy = "ORDER BY " . join(', ', array_map(function ($orderBy) {
             return is_array($orderBy) ? $orderBy[0] . ($orderBy[1] ? " ASC" : " DESC") : "$orderBy ASC";
         }, $orderBys));
 

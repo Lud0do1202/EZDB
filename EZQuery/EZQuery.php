@@ -1,7 +1,7 @@
 <?php
 
 // Query
-require_once "./Query/IQuery.php";
+require_once "./Query/Query.php";
 require_once "./Query/SelectQuery.php";
 require_once "./Query/InsertQuery.php";
 require_once "./Query/DeleteQuery.php";
@@ -27,7 +27,7 @@ class EZQuery
     }
 
     /* Select */
-    public function executeSelect(ISelectQuery $query): array
+    public function executeSelect(SSelectQuery $query): array
     {
         // Debug
         if ($this->debug) $this->displayQuery($query, $query->getArgs());
@@ -83,7 +83,7 @@ class EZQuery
     }
 
     /* Edit */
-    public function executeEdit(IEditQuery $query): int
+    public function executeEdit(SEditQuery $query): int
     {
         // Debug
         if ($this->debug) $this->displayQuery($query, $query->getArgs());

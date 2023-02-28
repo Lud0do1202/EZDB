@@ -1,11 +1,12 @@
 <?php
 
 
-class UpdateQuery implements IEditQuery
+class UpdateQuery extends SEditQuery
 {
     // Attributes
     private string $where = "";
-    private array $args = [];
+    private array $argsSet = [];
+    private array $argsWhere = [];
 
     // Must Set Attributes
     private string $table;
@@ -16,7 +17,7 @@ class UpdateQuery implements IEditQuery
         $this->table = $table;
 
         $this->set = join(', ', array_map(function ($s) {
-            $this->args[] = $s[1];
+            $this->argsSet[] = $s[1];
             return $s[0] . " = ?";
         }, $set));
     }
@@ -25,25 +26,10 @@ class UpdateQuery implements IEditQuery
     /* Where */
     public function where(string $where, ...$args): UpdateQuery
     {
-        // Split into a table the string $where
-        $split = str_split($where);
+        $convertArg = $this->convertArgs($where, $args);
 
-        // replace % by the value
-        // Stock the value of ? into $this->args
-        $count = count($split);
-        for ($i = $j = 0; $i < $count; $i++) {
-            switch ($split[$i]) {
-                case '%':
-                    $split[$i] = $args[$j++];
-                    break;
-                case '?':
-                    $this->args[] = $args[$j++];
-                    break;
-            }
-        }
-
-        // Join the table
-        $this->where = "WHERE " . join("", $split);
+        $this->where = "WHERE " . $convertArg[0];
+        $this->argsWhere = $convertArg[1];
 
         return $this;
     }
@@ -51,7 +37,7 @@ class UpdateQuery implements IEditQuery
     /* Get Args */
     public function getArgs(): array
     {
-        return $this->args;
+        return array_merge($this->argsSet, $this->argsWhere);
     }
 
     /* To String */
