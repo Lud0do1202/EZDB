@@ -7,6 +7,7 @@ class SelectQuery implements ISelectQuery
     private string $limit = "";
     private string $where = "";
     private string $orderBy = "";
+    private string $groupBy = "";
     private string $columns = "*";
     private array $args = [];
 
@@ -81,6 +82,15 @@ class SelectQuery implements ISelectQuery
     }
 
     /* ********************************************************* */
+    /* Group By */
+    public function groupBy(...$groupBys): SelectQuery
+    {
+        $this->groupBy = "GROUP BY " . join(', ', $groupBys);
+
+        return $this;
+    }
+
+    /* ********************************************************* */
     /* Get Args */
     public function getArgs(): array
     {
@@ -91,6 +101,6 @@ class SelectQuery implements ISelectQuery
     /* To String */
     public function __toString()
     {
-        return "SELECT {$this->distinct} {$this->limit} {$this->columns} FROM {$this->tables} {$this->where} {$this->orderBy}";
+        return "SELECT {$this->distinct} {$this->limit} {$this->columns} FROM {$this->tables} {$this->where} {$this->groupBy} {$this->orderBy}";
     }
 }
