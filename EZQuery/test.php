@@ -38,9 +38,19 @@
     echo "<pre>";
     print_r($ezq->executeSelect(new SelectQuery(Mydb::USERS)));
     echo "</pre>";
-    
+
     echo "<pre>";
     print_r($ezq->sexecuteSelect("SELECT % FROM %", "COUNT(1)", Mydb::USERS));
+    echo "</pre>";
+
+    echo "<pre>";
+    print_r($ezq->executeSelect(
+        (new SelectQuery(Mydb::USERS))
+            ->columns("avg(" . Mydb::USERS_ID . ")")
+            ->where("% >= ?", Mydb::USERS_ID, 1)
+            ->groupBy(Mydb::USERS_ID)
+            ->having("% >= ?", "avg(" . Mydb::USERS_ID . ")", 1.5)
+    ));
     echo "</pre>";
     ?>
 

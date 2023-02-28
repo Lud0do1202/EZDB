@@ -5,11 +5,13 @@ class SelectQuery implements ISelectQuery
     // Attributes
     private string $distinct = "";
     private string $limit = "";
-    private string $where = "";
-    private string $orderBy = "";
-    private string $groupBy = "";
     private string $columns = "*";
-    private array $args = [];
+    private string $where = "";
+    private string $groupBy = "";
+    private string $having = "";
+    private string $orderBy = "";
+    private array $argsWhere = [];
+    private array $argsHaving = [];
 
     // Must Set Attributes
     private string $tables;
@@ -59,13 +61,49 @@ class SelectQuery implements ISelectQuery
                     $split[$i] = $args[$j++];
                     break;
                 case '?':
-                    $this->args[] = $args[$j++];
+                    $this->argsWhere[] = $args[$j++];
                     break;
             }
         }
 
         // Join the table
         $this->where = "WHERE " . join("", $split);
+
+        return $this;
+    }
+
+    /* ********************************************************* */
+    /* Group By */
+    public function groupBy(...$groupBys): SelectQuery
+    {
+        $this->groupBy = "GROUP BY " . join(', ', $groupBys);
+
+        return $this;
+    }
+
+    /* ********************************************************* */
+    /* Having */
+    public function having(string $having, ...$args): SelectQuery
+    {
+        // Split into a table the string $where
+        $split = str_split($having);
+
+        // replace % by the value
+        // Stock the value of ? into $this->args
+        $count = count($split);
+        for ($i = $j = 0; $i < $count; $i++) {
+            switch ($split[$i]) {
+                case '%':
+                    $split[$i] = $args[$j++];
+                    break;
+                case '?':
+                    $this->argsHaving[] = $args[$j++];
+                    break;
+            }
+        }
+
+        // Join the table
+        $this->having = "HAVING " . join("", $split);
 
         return $this;
     }
@@ -82,25 +120,16 @@ class SelectQuery implements ISelectQuery
     }
 
     /* ********************************************************* */
-    /* Group By */
-    public function groupBy(...$groupBys): SelectQuery
-    {
-        $this->groupBy = "GROUP BY " . join(', ', $groupBys);
-
-        return $this;
-    }
-
-    /* ********************************************************* */
     /* Get Args */
     public function getArgs(): array
     {
-        return $this->args;
+        return array_merge($this->argsWhere, $this->argsHaving);
     }
 
     /* ********************************************************* */
     /* To String */
     public function __toString()
     {
-        return "SELECT {$this->distinct} {$this->limit} {$this->columns} FROM {$this->tables} {$this->where} {$this->groupBy} {$this->orderBy}";
+        return "SELECT {$this->distinct} {$this->limit} {$this->columns} FROM {$this->tables} {$this->where} {$this->groupBy} {$this->having} {$this->orderBy}";
     }
 }
